@@ -37,15 +37,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
         String authorization = request.getHeader("Authorization");
-        String url= String.valueOf(request.getRequestURL());
+        String url= request.getRequestURI();
+        System.out.println("url = " + url);
         if(url.startsWith("/monitor")){
             if(!url.endsWith("/register")){
                 Client clientByToken = clientService.findClientByToken(authorization);
                 if(clientByToken==null) {
                     response.setStatus(401);
-                    response.getWriter().write(RestBean.failure(401, "Unauthorized").asJsonString());
+                    response.getWriter().write(RestBean.failure(401, "未注册").asJsonString());
                 }
                 else{
+                    System.out.println("clientByToken = " + clientByToken);
                     request.setAttribute(Const.ATTR_CLIENT, clientByToken);
                 }
             }

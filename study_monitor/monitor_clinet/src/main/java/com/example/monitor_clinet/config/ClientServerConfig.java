@@ -2,9 +2,12 @@ package com.example.monitor_clinet.config;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.example.monitor_clinet.entity.ConnectionConfig;
+import com.example.monitor_clinet.utils.MonitorInfoUtils;
 import com.example.monitor_clinet.utils.NetUtils;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -14,13 +17,16 @@ import java.util.Scanner;
 
 @Slf4j
 @Configuration
-public class ClientServerConfig {
+public class ClientServerConfig implements ApplicationRunner {
     @Resource
     NetUtils netUtils;
+    @Resource
+    MonitorInfoUtils monitorInfoUtils;
     @Bean
     ConnectionConfig connectionConfig() {
         log.info("正在加载连接配置...");
         ConnectionConfig config = readConfigFromFile();
+        System.out.println(monitorInfoUtils.monitorBaseDetail());
         if(config==null){
             return registerFromServer();
         }
@@ -63,4 +69,10 @@ public class ClientServerConfig {
      }
      return null;
  }
+
+    @Override
+    public void run(ApplicationArguments args) throws Exception {
+        log.info("客户端已启动");
+        netUtils.updateBaseDetails(monitorInfoUtils.monitorBaseDetail());
+    }
 }
