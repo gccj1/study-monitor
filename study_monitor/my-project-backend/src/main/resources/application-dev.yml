@@ -7,7 +7,7 @@ spring:
   mail:
     host: smtp.163.com
     username: gnengjun@163.com
-    password: NNTYARNEDWSJKIKM
+    password: OWADHQIVGFOYOGUO
   rabbitmq:
     addresses: localhost
     username: guest

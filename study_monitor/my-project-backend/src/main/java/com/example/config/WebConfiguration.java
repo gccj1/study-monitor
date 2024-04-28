@@ -1,5 +1,6 @@
 package com.example.config;
 
+import com.baomidou.mybatisplus.core.incrementer.DefaultIdentifierGenerator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -15,5 +16,9 @@ public class WebConfiguration implements WebMvcConfigurer {
     @Bean
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
+    }
+    @Bean
+    public DefaultIdentifierGenerator defaultIdentifierGenerator(){
+        return new DefaultIdentifierGenerator();
     }
 }
