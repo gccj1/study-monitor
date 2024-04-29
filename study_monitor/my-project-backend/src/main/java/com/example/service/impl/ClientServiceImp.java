@@ -4,9 +4,11 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.entity.dto.Client;
 import com.example.entity.dto.ClientDetail;
 import com.example.entity.vo.request.CliDetailVO;
+import com.example.entity.vo.request.RuntimeDetailVO;
 import com.example.mapper.CliDetailMapper;
 import com.example.mapper.ClientMapper;
 import com.example.service.ClientService;
+import com.example.utils.InfluxUtils;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import org.springframework.beans.BeanUtils;
@@ -22,6 +24,7 @@ public class ClientServiceImp extends ServiceImpl<ClientMapper, Client> implemen
         private final   String registerToken=generateToken();
         private final   Map<Integer,Client> clientIdMap=new ConcurrentHashMap<>();
         private final   Map<String,Client> clientTokenMap=new ConcurrentHashMap<>();
+        private final   Map<Integer,RuntimeDetailVO> RuntimeMap=new ConcurrentHashMap<>();
         @PostConstruct
         void init(){
             clientTokenMap.clear();
@@ -30,6 +33,16 @@ public class ClientServiceImp extends ServiceImpl<ClientMapper, Client> implemen
         }
     @Resource
     CliDetailMapper detailMapper;
+    @Resource
+    InfluxUtils influxUtils;
+
+    @Override
+    public String getRuntimeInfo(RuntimeDetailVO vo, Client client) {
+        RuntimeMap.put(client.getId(),vo);
+        influxUtils.writeData(client,vo);
+        return null;
+    }
+
     @Override
     public boolean registerClient(String token) {
         if(registerToken.equals(token)){

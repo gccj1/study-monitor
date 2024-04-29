@@ -3,6 +3,7 @@ package com.example.controller;
 import com.example.entity.RestBean;
 import com.example.entity.dto.Client;
 import com.example.entity.vo.request.CliDetailVO;
+import com.example.entity.vo.request.RuntimeDetailVO;
 import com.example.service.ClientService;
 import com.example.utils.Const;
 import jakarta.annotation.Resource;
@@ -23,5 +24,10 @@ public class ClientController {
     public RestBean<String> clientDetail(@RequestBody CliDetailVO vo, @RequestAttribute(Const.ATTR_CLIENT)Client client) {
         String clientDetail = clientService.getClientDetail(vo, client);
         return clientDetail==null ?RestBean.success():RestBean.failure(401,clientDetail);
+    }
+    @PostMapping("/runtime")
+    public RestBean<String> runtimeDetail(@RequestBody RuntimeDetailVO vo, @RequestAttribute(Const.ATTR_CLIENT)Client client){
+        String runtimeDetail = clientService.getRuntimeInfo(vo, client);
+        return runtimeDetail==null?RestBean.success():RestBean.failure(401,runtimeDetail);
     }
 }

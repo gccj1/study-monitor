@@ -4,6 +4,7 @@ import com.alibaba.fastjson2.JSONObject;
 import com.example.monitor_clinet.entity.BaseDetail;
 import com.example.monitor_clinet.entity.ConnectionConfig;
 import com.example.monitor_clinet.entity.Response;
+import com.example.monitor_clinet.entity.RuntimeDetail;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
@@ -36,7 +37,11 @@ public class NetUtils {
     public void updateBaseDetails(BaseDetail detail){
         Response response = doPost("/detail", detail);
         if(response.success()) log.info("Update successful");
-        else log.error("Update failed: {}", response.getMessage());
+        else log.error("BaseDetails Update failed: {}", response.getMessage());
+    }
+    public void updateRuntimeDetails(RuntimeDetail detail){
+        Response response=doPost("/runtime", detail);
+        if(!response.success())  log.error("RuntimeDetails Update failed: {}", response.getMessage());
     }
     private Response doPost(String url, Object data){
         try {
