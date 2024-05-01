@@ -8,8 +8,8 @@ public class RuntimeDetailVO {
     double cpuUsage;
     double memoryUsage;
     double diskUsage;
-    double networkUpload;
-    double networkDownload;
+    long networkUpload;
+    long networkDownload;
     double diskRead;
     double diskWrite;
 }

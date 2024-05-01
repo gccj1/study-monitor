@@ -72,7 +72,7 @@ const defaultIndex = () => {
 const tab = ref(defaultIndex())
 function changePage(item) {
   tab.value = item.id
-  router.push({name: item.route})
+  router.push({name : item.route})
 }
 
 function userLogout() {

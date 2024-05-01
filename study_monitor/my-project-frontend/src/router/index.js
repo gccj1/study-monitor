@@ -28,11 +28,21 @@ const router = createRouter({
             name: 'index',
             component: () => import('@/views/IndexView.vue'),
             children: [
+                // {
+                //     path: 'user-setting',
+                //     name: 'user-setting',
+                //     component: () => import('@/views/settings/UserSettings.vue')
+                // },
                 {
-                    path: 'user-setting',
-                    name: 'user-setting',
-                    component: () => import('@/views/settings/UserSettings.vue')
-                }
+                    path: '',
+                    name: 'manage',
+                    component: () => import('@/views/Manage.vue')
+                },
+                {
+                    path: 'security',
+                    name: 'security',
+                    component: () => import('@/views/Security.vue')
+                },
             ]
         },
 

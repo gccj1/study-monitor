@@ -4,7 +4,9 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.entity.dto.Client;
 import com.example.entity.dto.ClientDetail;
 import com.example.entity.vo.request.CliDetailVO;
+import com.example.entity.vo.request.RenameVo;
 import com.example.entity.vo.request.RuntimeDetailVO;
+import com.example.entity.vo.response.ClientPreviewVO;
 import com.example.mapper.CliDetailMapper;
 import com.example.mapper.ClientMapper;
 import com.example.service.ClientService;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -27,14 +30,19 @@ public class ClientServiceImp extends ServiceImpl<ClientMapper, Client> implemen
         private final   Map<Integer,RuntimeDetailVO> RuntimeMap=new ConcurrentHashMap<>();
         @PostConstruct
         void init(){
-            clientTokenMap.clear();
-            clientIdMap.clear();
             list().forEach(this::addCache);
         }
     @Resource
     CliDetailMapper detailMapper;
     @Resource
     InfluxUtils influxUtils;
+
+    @Override
+    public boolean renameClient(RenameVo vo) {
+        boolean update = update().eq("id", vo.getId()).set("name", vo.getName()).update();
+        init();
+        return update;
+    }
 
     @Override
     public String getRuntimeInfo(RuntimeDetailVO vo, Client client) {
@@ -73,6 +81,20 @@ public class ClientServiceImp extends ServiceImpl<ClientMapper, Client> implemen
           count= detailMapper.updateById(clientDetail);
         }
         return count>0?  null:"信息更新失败";
+    }
+
+    @Override
+    public List<ClientPreviewVO>getClientPreviewList() {
+       return clientTokenMap.values().stream().map(client -> {
+            ClientPreviewVO vo=client.asViewObject(ClientPreviewVO.class);
+            BeanUtils.copyProperties(detailMapper.selectById(client.getId()),vo);
+            RuntimeDetailVO runtimeDetailVO = RuntimeMap.get(client.getId());
+            if(runtimeDetailVO!=null && System.currentTimeMillis()-runtimeDetailVO.getTimestamp()< 30*1000){
+                BeanUtils.copyProperties(runtimeDetailVO,vo);
+                vo.setOnline(true);
+            }
+            return vo;
+        }).toList();
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.example.monitor_clinet.utils;
 
 import com.example.monitor_clinet.entity.BaseDetail;
 import com.example.monitor_clinet.entity.RuntimeDetail;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import oshi.SystemInfo;
@@ -13,16 +14,21 @@ import oshi.hardware.HWDiskStore;
 import java.io.File;
 import java.io.IOException;
 import java.net.NetworkInterface;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Objects;
-import java.util.Properties;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+
 @Slf4j
 @Component
 public class MonitorInfoUtils {
     private final SystemInfo info = new SystemInfo();
     private final Properties properties = System.getProperties();
-
+    private final Map<String,Long> netSpeedMap=new ConcurrentHashMap<>();
+    @PostConstruct
+    void init(){
+        List<NetworkIF> networkInterface = Objects.requireNonNull(info.getHardware().getNetworkIFs());
+        netSpeedMap.put("upload",networkInterface.stream().mapToLong(NetworkIF::getBytesSent).sum());
+        netSpeedMap.put("download",networkInterface.stream().mapToLong(NetworkIF::getBytesRecv).sum());
+    }
     public BaseDetail monitorBaseDetail() {
         OperatingSystem os = info.getOperatingSystem();
         HardwareAbstractionLayer hardware = info.getHardware();
@@ -45,16 +51,18 @@ public class MonitorInfoUtils {
         double statisticTime = 0.5;
         try {
             HardwareAbstractionLayer hardware = info.getHardware();
-            NetworkIF networkInterface = Objects.requireNonNull(this.findNetworkInterface(hardware));
+            List<NetworkIF> networkInterface = Objects.requireNonNull(hardware.getNetworkIFs());
             CentralProcessor processor = hardware.getProcessor();
-            double upload = networkInterface.getBytesSent(), download = networkInterface.getBytesRecv();
+            long upload = networkInterface.stream().mapToLong(NetworkIF::getBytesSent).sum(),
+                    download = networkInterface.stream().mapToLong(NetworkIF::getBytesRecv).sum();
             double read = hardware.getDiskStores().stream().mapToLong(HWDiskStore::getReadBytes).sum();
             double write = hardware.getDiskStores().stream().mapToLong(HWDiskStore::getWriteBytes).sum();
             long[] ticks = processor.getSystemCpuLoadTicks();
             Thread.sleep((long) (statisticTime * 1000));
-            networkInterface = Objects.requireNonNull(this.findNetworkInterface(hardware));
-            upload = (networkInterface.getBytesSent() - upload) / statisticTime;
-            download =  (networkInterface.getBytesRecv() - download) / statisticTime;
+            long uploadSpeed =(upload - netSpeedMap.get("upload")) / 5;
+            long downloadSpeed =  (download - netSpeedMap.get("download")) / 5;
+            netSpeedMap.put("upload",upload);
+            netSpeedMap.put("download",download);
             read = (hardware.getDiskStores().stream().mapToLong(HWDiskStore::getReadBytes).sum() - read) / statisticTime;
             write = (hardware.getDiskStores().stream().mapToLong(HWDiskStore::getWriteBytes).sum() - write) / statisticTime;
             double memory = (hardware.getMemory().getTotal() - hardware.getMemory().getAvailable()) / 1024.0 / 1024 / 1024;
@@ -64,8 +72,8 @@ public class MonitorInfoUtils {
                     .setCpuUsage(this.calculateCpuUsage(processor, ticks))
                     .setMemoryUsage(memory)
                     .setDiskUsage(disk)
-                    .setNetworkUpload(upload / 1024)
-                    .setNetworkDownload(download / 1024)
+                    .setNetworkUpload(uploadSpeed / 1024)
+                    .setNetworkDownload(downloadSpeed / 1024)
                     .setDiskRead(read / 1024/ 1024)
                     .setDiskWrite(write / 1024 / 1024)
                     .setTimestamp(new Date().getTime());
