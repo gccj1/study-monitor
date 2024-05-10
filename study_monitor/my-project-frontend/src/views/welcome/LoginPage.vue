@@ -56,8 +56,8 @@ import {login} from '@/net'
 
 const formRef = ref()
 const form = reactive({
-  username: '',
-  password: '',
+  username: 'admin',
+  password: '123456',
   remember: false
 })
 

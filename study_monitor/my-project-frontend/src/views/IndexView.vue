@@ -76,7 +76,10 @@ function changePage(item) {
 }
 
 function userLogout() {
-  logout(() => router.push("/"))
+  logout(() =>{
+    router.push("/")
+    location.reload()
+  } )
 }
 </script>
 

@@ -26,6 +26,21 @@ function percentageToStatus(percentage) {
     else
         return 'exception'
 }
+export function osNameToIcon(name) {
+    if(name.indexOf('Ubuntu') >= 0)
+        return {icon: 'fa-ubuntu', color: '#db4c1a'}
+    else if(name.indexOf('CentOS') >= 0)
+        return {icon: 'fa-centos', color: '#9dcd30'}
+    else if(name.indexOf('macOS') >= 0)
+        return {icon: 'fa-apple', color: 'grey'}
+    else if(name.indexOf('Windows') >= 0)
+        return {icon: 'fa-windows', color: '#3578b9'}
+    else if(name.indexOf('Debian') >= 0)
+        return {icon: 'fa-debian', color: '#a80836'}
+    else
+        return {icon: 'fa-linux', color: 'grey'}
+}
+
 function rename(id, name, after) {
     ElMessageBox.prompt('请输入新的服务器主机名称', '修改名称', {
         confirmButtonText: '确认',
@@ -41,6 +56,14 @@ function rename(id, name, after) {
             after()
         },(meg) => ElMessage.error(meg))
     )
+}
+export function cpuNameToImage(name){
+        if(name.indexOf('Apple') >= 0)
+            return 'Apple.png'
+        else if(name.indexOf('AMD') >= 0)
+            return 'AMD.png'
+        else
+            return 'Intel.png'
 }
 export  {
     fitByUnit,copyIp,rename,percentageToStatus

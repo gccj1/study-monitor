@@ -7,6 +7,7 @@ public class ClientPreviewVO {
     int id;
     boolean online;
     String name;
+    String node;
     String location;
     String osName;
     String osVersion;

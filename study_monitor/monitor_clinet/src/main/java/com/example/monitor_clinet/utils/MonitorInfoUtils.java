@@ -63,6 +63,7 @@ public class MonitorInfoUtils {
             long downloadSpeed =  (download - netSpeedMap.get("download")) / 5;
             netSpeedMap.put("upload",upload);
             netSpeedMap.put("download",download);
+//            double cpuTemperature = hardware.getSensors().getCpuTemperature();
             read = (hardware.getDiskStores().stream().mapToLong(HWDiskStore::getReadBytes).sum() - read) / statisticTime;
             write = (hardware.getDiskStores().stream().mapToLong(HWDiskStore::getWriteBytes).sum() - write) / statisticTime;
             double memory = (hardware.getMemory().getTotal() - hardware.getMemory().getAvailable()) / 1024.0 / 1024 / 1024;

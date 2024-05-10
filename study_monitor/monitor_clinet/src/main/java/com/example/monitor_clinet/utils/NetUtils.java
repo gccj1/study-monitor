@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -37,11 +38,25 @@ public class NetUtils {
     public void updateBaseDetails(BaseDetail detail){
         Response response = doPost("/detail", detail);
         if(response.success()) log.info("Update successful");
+        else if(response.getMessage().equals("服务未注册")){
+            if(!deleteConfig()) log.error("删除配置文件失败，请手动删除");
+            else log.info("服务未注册，删除配置文件,请重新启动");
+            System.exit(-1);
+        }
         else log.error("BaseDetails Update failed: {}", response.getMessage());
+    }
+    private boolean deleteConfig(){
+        File file=new File("config/server.json");
+            return file.delete();
     }
     public void updateRuntimeDetails(RuntimeDetail detail){
         Response response=doPost("/runtime", detail);
-        if(!response.success())  log.error("RuntimeDetails Update failed: {}", response.getMessage());
+        if(response.getMessage().equals("服务未注册")){
+            if(!deleteConfig()) log.error("删除配置文件失败，请手动删除");
+            else log.info("服务未注册，删除配置文件,请重新启动");
+            System.exit(-1);
+        }
+       else if(!response.success() )  log.error("RuntimeDetails Update failed: {}", response.getMessage());
     }
     private Response doPost(String url, Object data){
         try {
@@ -55,7 +70,6 @@ public class NetUtils {
             return JSONObject.parseObject(response.body()).to(Response.class);
         } catch (IOException e) {
             log.error("Error in doPost: {}", e.getMessage());
-
             return Response.errorInfo(e);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);

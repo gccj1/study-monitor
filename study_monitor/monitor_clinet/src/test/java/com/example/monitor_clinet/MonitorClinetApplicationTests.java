@@ -8,6 +8,7 @@ class MonitorClinetApplicationTests {
 
     @Test
     void contextLoads() {
+
     }
 
 }

@@ -6,7 +6,6 @@ import com.example.entity.vo.response.AuthorizeVO;
 import com.example.filter.JwtAuthenticationFilter;
 import com.example.filter.RequestLogFilter;
 import com.example.service.AccountService;
-import com.example.utils.Const;
 import com.example.utils.JwtUtils;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
@@ -54,9 +53,12 @@ public class SecurityConfiguration {
         return http
                 .authorizeHttpRequests(conf -> conf
                         .requestMatchers("/api/auth/**", "/error").permitAll()
+                        .requestMatchers("/terminal/**").permitAll()
                         .requestMatchers("/monitor/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                        .anyRequest().hasAnyRole(Const.ROLE_DEFAULT)
+//                        .anyRequest().hasAnyRole(Const.ROLE_DEFAULT)
+                        .anyRequest().authenticated()
+
                 )
                 .formLogin(conf -> conf
                         .loginProcessingUrl("/api/auth/login")

@@ -1,5 +1,5 @@
 <script setup>
-import {fitByUnit, copyIp, rename, percentageToStatus} from '@/utils'
+import {fitByUnit, copyIp, rename, percentageToStatus,osNameToIcon} from '@/utils'
 const props = defineProps({
   data: Object,
   update: Function
@@ -17,8 +17,8 @@ const props = defineProps({
         </div>
         <div class="os">
           操作系统:
-<!--          <i :style="{color: osNameToIcon(data.osName).color}"-->
-<!--             :class="`fa-brands ${osNameToIcon(data.osName).icon}`"></i>-->
+          <i :style="{color: osNameToIcon(data.osName).color}"
+             :class="`fa-brands ${osNameToIcon(data.osName).icon}`"></i>
           {{`${data.osName} ${data.osVersion}`}}
         </div>
       </div>

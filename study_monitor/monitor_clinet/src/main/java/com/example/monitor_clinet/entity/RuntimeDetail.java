@@ -9,6 +9,7 @@ public class RuntimeDetail {
     long timestamp;
     double cpuUsage;
     double memoryUsage;
+    double cpuTemperature;
     double diskUsage;
     long networkUpload;
     long networkDownload;
